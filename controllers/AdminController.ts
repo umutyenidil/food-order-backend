@@ -1,9 +1,9 @@
-import {Request, Response, NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 import {CreateVendorParams} from "../dto";
 import {VendorModel} from "../models";
-import mongoose, {Error as MongooseError} from 'mongoose';
+import {Error as MongooseError} from 'mongoose';
 import {GeneratePassword, GenerateSalt} from "../utilities";
-import bcrypt from "bcrypt";
+
 
 export const CreateVendor = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -58,13 +58,37 @@ export const CreateVendor = async (req: Request, res: Response, next: NextFuncti
 
 
 export const ReadVendors = async (req: Request, res: Response, next: NextFunction) => {
+    const vendors = await VendorModel.find();
+
+    if (vendors === null) {
+        return res.status(404).json({
+            message: "Vendors not found",
+        });
+    }
+
     return res.json({
-        message: "ReadVendors initialized successfully",
+        message: "Vendors has fetched successfully",
+        data: {
+            vendors: vendors,
+        },
     });
 };
 
 export const ReadVendorById = async (req: Request, res: Response, next: NextFunction) => {
+    const vendorId = req.params.id;
+
+    const vendor = await VendorModel.findById(vendorId);
+
+    if (vendor === null) {
+        return res.status(404).json({
+            message: "Vendor not found",
+        });
+    }
+
     return res.json({
-        message: "ReadVendorById initialized successfully",
+        message: "Vendor has fetched successfully",
+        data: {
+            vendor: vendor,
+        },
     });
 };
